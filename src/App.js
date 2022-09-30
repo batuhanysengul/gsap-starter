@@ -1,56 +1,72 @@
-import logo from './logo.svg';
-import './App.css';
-import React, { useRef, useEffect } from 'react';
-
-import { gsap, Power3, Power4} from 'gsap'
+import "./App.css";
+import React, { useRef, useEffect, useState } from "react";
+import { gsap, Power3 } from "gsap";
 
 function App() {
-  let logoItem = useRef(null)
-  let pItem = useRef(null)
+  let circle = useRef(null);
+  let circleRed = useRef(null);
+  let circleBlue = useRef(null);
 
-  useEffect(()=>{
-    gsap.to(
-      logoItem, //target 
-      {
-        duration: 3,
-        opacity: 1,
-        y: -30,
-        ease: Power3.easeOut
-      }
-    )
-  }, [])
+  //to prevent that flash when u refresh
+  let app = useRef(null)
 
+  const [state, setState] = useState(false)
 
-  useEffect(() =>{
-    gsap.to(
-      pItem,{
-        duration: 2,
-        x: 100,
-        ease: Power4.easeInOut
-      }
-    )
-  })
+  const handleExpand = () => {
+    gsap.to(circleRed, {
+      width: 200,
+      height: 200,
+      duration: 1,
+      ease: Power3.easeOut
+    })
+    setState(true)
+  }
+
+  const handleShrink = () => {
+    gsap.to(circleRed, {
+      width: 75,
+      height: 75,
+      duration: 1,
+      ease: Power3.easeOut
+    })
+    setState(false)
+  }
+
+  //disable react strict mode
+  useEffect(() => {
+    gsap.to(app, {
+      duration: 0,
+      css: {visibility: 'visible'}
+    })
+
+    gsap.from(circle, {
+      duration: 1,
+      opacity: 0,
+      x: 200,
+    })
+    gsap.from(circleRed, {
+      duration: 1,
+      opacity: 0,
+      x: 200,
+      delay: 0.2,
+    })
+    gsap.from(circleBlue, {
+      duration: 1,
+      opacity: 0,
+      x: 200,
+      delay: 0.4,
+    })
+  }, []);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img 
-        ref={el => {logoItem = el}}
-        src={logo} className="App-logo" alt="logo" />
-        <p
-        ref={pel => {pItem = pel}}
-        >
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="App" ref={el => app = el}>
+      <div className="circle-container">
+        <div ref={(el) => (circle = el)} className="circle"></div>
+        <div
+        onClick={state !== true ? handleExpand : handleShrink}
+        ref={(el) => (circleRed = el)} className="circle red"></div>
+        <div ref={(el) => (circleBlue = el)} className="circle blue"></div>
+      </div>
     </div>
   );
 }
